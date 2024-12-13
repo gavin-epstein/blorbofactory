@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://l4452j0nta4c"]
+
+[ext_resource type="PackedScene" uid="uid://cgfymcy22hhbk" path="res://Assets/Scenes/World.tscn" id="1_7tptj"]
+[ext_resource type="Script" path="res://Assets/Scripts/Controller.gd" id="2_f7lf4"]
+
+[node name="Main" type="Node"]
+
+[node name="World" parent="." instance=ExtResource("1_7tptj")]
+
+[node name="Controller" type="Node" parent="."]
+script = ExtResource("2_f7lf4")
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

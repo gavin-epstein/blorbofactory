@@ -1,0 +1,30 @@
+[gd_scene load_steps=8 format=3 uid="uid://s5od4yre8a4w"]
+
+[ext_resource type="Script" path="res://Assets/Scripts/Product.gd" id="1_55h5g"]
+[ext_resource type="PackedScene" uid="uid://rdjj2nd6du60" path="res://Assets/Models/sphere.glb" id="2_mvpne"]
+[ext_resource type="PackedScene" uid="uid://dverxty06lqhn" path="res://Assets/Models/yellowshape.glb" id="3_hgx80"]
+[ext_resource type="PackedScene" uid="uid://cv6t0f4bqo4p6" path="res://Assets/Models/cube.glb" id="4_5wpsa"]
+[ext_resource type="PackedScene" uid="uid://bctl5y6scj6a0" path="res://Assets/Models/greenshape.glb" id="5_uv5ne"]
+[ext_resource type="PackedScene" uid="uid://baty8bt4duc3m" path="res://Assets/Models/qingshape.glb" id="6_qe6sr"]
+[ext_resource type="PackedScene" uid="uid://bld52872bdc4l" path="res://Assets/Models/purpleshape.glb" id="7_cp150"]
+
+[node name="Product" type="Node3D"]
+script = ExtResource("1_55h5g")
+
+[node name="sphere" parent="." instance=ExtResource("2_mvpne")]
+visible = false
+
+[node name="yellowshape" parent="." instance=ExtResource("3_hgx80")]
+visible = false
+
+[node name="cube2" parent="." instance=ExtResource("4_5wpsa")]
+visible = false
+
+[node name="greenshape" parent="." instance=ExtResource("5_uv5ne")]
+visible = false
+
+[node name="qingshape" parent="." instance=ExtResource("6_qe6sr")]
+visible = false
+
+[node name="purpleshape" parent="." instance=ExtResource("7_cp150")]
+visible = false

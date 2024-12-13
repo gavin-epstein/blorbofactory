@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=3 uid="uid://4yqbfaanaemg"]
+
+[ext_resource type="PackedScene" uid="uid://ba2qob132i0lt" path="res://Assets/Models/sphereport.glb" id="1_5wxx8"]
+[ext_resource type="Script" path="res://Assets/Scripts/Port.gd" id="1_8x7ft"]
+[ext_resource type="PackedScene" uid="uid://bri1msl7ae6dk" path="res://Assets/Models/arrow.glb" id="2_k1o4w"]
+[ext_resource type="PackedScene" uid="uid://nfphbq6n85kh" path="res://Assets/Models/cubeport.glb" id="4_wr88f"]
+
+[node name="Port" type="Node3D"]
+script = ExtResource("1_8x7ft")
+
+[node name="sphereport" parent="." instance=ExtResource("1_5wxx8")]
+visible = false
+
+[node name="inarrow" parent="." instance=ExtResource("2_k1o4w")]
+
+[node name="outarrow" parent="." instance=ExtResource("2_k1o4w")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.410616, 0, 0)
+
+[node name="cubeport2" parent="." instance=ExtResource("4_wr88f")]
+visible = false

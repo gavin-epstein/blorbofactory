@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://1w5ay2p48avn"]
+
+[ext_resource type="Script" path="res://Assets/Scripts/Wire.gd" id="1_vjhnp"]
+
+[sub_resource type="Curve3D" id="Curve3D_0wqjp"]
+
+[node name="Wire" type="Path3D"]
+curve = SubResource("Curve3D_0wqjp")
+script = ExtResource("1_vjhnp")
+
+[node name="CSGPolygon3D" type="CSGPolygon3D" parent="."]
+polygon = PackedVector2Array(0.141327, 0.263736, 0.231524, 0.14022, 0.214035, -0.0915215, 0.0899018, -0.204926, -0.105868, -0.189617, -0.251558, -0.0653813, -0.249413, 0.128428, -0.13746, 0.252851)
+mode = 2
+path_node = NodePath("..")
+path_interval_type = 0
+path_interval = 1.0
+path_simplify_angle = 0.0
+path_rotation = 2
+path_local = false
+path_continuous_u = true
+path_u_distance = 1.0
+path_joined = false
+smooth_faces = true

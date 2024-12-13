@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://cgfymcy22hhbk"]
+
+[ext_resource type="PackedScene" uid="uid://c0fhpojl2orn4" path="res://Assets/Models/landscape.glb" id="1_pmm48"]
+[ext_resource type="Script" path="res://Assets/Scripts/World.gd" id="1_t4v4d"]
+[ext_resource type="Script" path="res://Assets/Scripts/WireGrid.gd" id="3_kftih"]
+
+[node name="World" type="Node3D"]
+script = ExtResource("1_t4v4d")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.749534, 0.661966, 0, -0.661966, 0.749534, 0, 3.56732, 3.63442)
+
+[node name="Factories" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+
+[node name="landscape" parent="." instance=ExtResource("1_pmm48")]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.0176904, 0.698792, -0.715106, 0.00797971, 0.715096, 0.69898, 0.999812, -0.0180716, 0.00707417, -1.23088, 5.0858, 0)
+light_color = Color(1, 1, 0.42, 1)
+
+[node name="Products" type="Node3D" parent="."]
+transform = Transform3D(0.762444, 0.350441, 0.543939, -0.341621, 0.931942, -0.121565, -0.549521, -0.0931343, 0.830272, 0, 0, 0)
+
+[node name="Wires" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0639698, -0.0236169, -0.0880222)
+
+[node name="wireGrid" type="Node3D" parent="Wires"]
+script = ExtResource("3_kftih")
