@@ -2,22 +2,26 @@ extends Path3D
 class_name Wire
 var start
 var end
+#const dot = preload("res://Assets/Models/cube.glb")
 
-
-
+func _init():
+	curve = Curve3D.new()
 
 func setCurve(path:Array[wireGrid.wireNode]):
-	const defaulthandle = .5
+	const defaulthandle = .2
 	curve.clear_points()
-	#TODO #change vert location to sink the end in a bit?
-	var vertpos = wireGrid.toRealCoords(path[0].gridCoords)
-	curve.add_point(vertpos,Vector3(0,0,0),wireGrid.getHandleCoords(path[0].gridCoords,defaulthandle)-vertpos)
-	for i in range(path.size()-2):
-		var innode:wireGrid.wireNode = path[i+1]
-		var outnode:wireGrid.wireNode = path[i+2]
-		vertpos = wireGrid.toRealCoords(innode.gridCoords)
-		curve.add_point(vertpos, wireGrid.getHandleCoords(innode.gridCoords,defaulthandle)-vertpos,wireGrid.getHandleCoords(outnode.gridCoords, defaulthandle)-vertpos)
-	
-	#add end
-	vertpos = wireGrid.toRealCoords(path[path.size()-1].gridCoords)
-	curve.add_point(vertpos,Vector3(0,0,0),wireGrid.getHandleCoords(path[path.size()-1].gridCoords,defaulthandle)-vertpos)
+	var startpos = wireGrid.toRealCoords(path[0].gridCoords)
+	self.position = startpos
+	var prevpos = startpos
+	for i in range(len(path)):
+		var node = path[i]
+		var vertpos:Vector3 = wireGrid.toRealCoords(node.gridCoords)
+		var handlepos=  wireGrid.getHandleCoords(node.gridCoords,defaulthandle) - vertpos
+		if i==0:
+			curve.add_point(vertpos-2*startpos, -1.*handlepos, handlepos);
+		elif i == len(path)-1:
+			curve.add_point(vertpos-2*startpos, handlepos, -1*handlepos);
+		elif (vertpos - prevpos).is_zero_approx():
+			curve.add_point(vertpos-2*startpos, Vector3.ZERO, handlepos);
+		else:
+			curve.add_point(vertpos-2*startpos,handlepos, Vector3.ZERO);

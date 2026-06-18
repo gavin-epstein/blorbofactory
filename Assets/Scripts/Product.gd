@@ -25,8 +25,15 @@ func generate(type, isZoomy = false, isBiggo= false, isFleezy = false):
 	if self.type == Product.Types.Blop:
 		$sphere.visible = true
 	elif self.type == Product.Types.Tungo:
+		$cube2.visible = true
+	elif self.type == Product.Types.Speeble:
 		$yellowshape.visible= true
-	#TODO rest of shapes
+	elif self.type == Product.Types.Flooper:
+		$greenshape.visible = true
+	elif self.type == Product.Types.ZeepZeep:
+		$qingshape.visible = true
+	elif self.type == Product.Types.Pazango:
+		$purpleshape.visible = true
 	
 	if self.isBiggo:
 		self.scale = self.scale*2

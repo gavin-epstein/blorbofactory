@@ -39,4 +39,6 @@ func sift_down(i):
 		data[i] = data[biggerchild]
 		data[biggerchild]=current
 		sift_down(biggerchild)
-		
+
+func size():
+	return data.size()	

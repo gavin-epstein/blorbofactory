@@ -58,8 +58,10 @@ albedo_color = Color(0.15686275, 1, 1, 0.7764706)
 [node name="World" type="Node3D"]
 script = ExtResource("1_t4v4d")
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.749534, 0.661966, 0, -0.661966, 0.749534, 0, 3.56732, 3.63442)
+[node name="Dolly" type="Node3D" parent="."]
+
+[node name="Camera3D" type="Camera3D" parent="Dolly"]
+transform = Transform3D(1, 0, 0, 0, 0.74953395, 0.66196597, 0, -0.66196597, 0.74953395, 0, 3.56732, 3.63442)
 
 [node name="MouseIndicator" type="Node3D" parent="."]
 visible = false
@@ -84,16 +86,17 @@ surface_material_override/0 = SubResource("StandardMaterial3D_q4606")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
 
 [node name="landscape" parent="." instance=ExtResource("1_pmm48")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.0176904, 0.698792, -0.715106, 0.00797971, 0.715096, 0.69898, 0.999812, -0.0180716, 0.00707417, -1.23088, 5.0858, 0)
-light_color = Color(1, 1, 0.42, 1)
+transform = Transform3D(0.019359853, 0.95411754, -0.29880583, 0.49758732, 0.25002626, 0.8305986, 0.867198, -0.16476223, -0.46991622, -1.23088, 5.0858, 0)
+light_color = Color(0.9915604, 0.9615578, 0.904697, 1)
+light_energy = 4.0
 
 [node name="Products" type="Node3D" parent="."]
 transform = Transform3D(0.762444, 0.350441, 0.543939, -0.341621, 0.931942, -0.121565, -0.549521, -0.0931343, 0.830272, 0, 0, 0)
 
 [node name="Wires" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0639698, -0.0236169, -0.0880222)
 
 [node name="wireGrid" type="Node3D" parent="Wires"]
 script = ExtResource("3_kftih")

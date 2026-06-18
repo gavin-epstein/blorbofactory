@@ -1,7 +1,11 @@
 extends Node3D
+class_name World
 const sqrt3 = 1.73205080757 
 const neighborcoords = [Vector2i(1,0), Vector2i(0,1), Vector2i(-1,1), Vector2i(-1,0),Vector2i(0,-1), Vector2i(1,-1) ]
-@onready var cam = $Camera3D;
+const MAXEXTENTS = 100; 
+const max_camera_pan_speed = 1;
+var camera_pan_vel = Vector2(0,0);
+@onready var cam = $Dolly/Camera3D;
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	global.world = self;
@@ -9,7 +13,8 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	pass
+	$Dolly.translate(Vector3(camera_pan_vel.x,0,-1*camera_pan_vel.y))
+	camera_pan_vel *=.9
 
 
 
@@ -77,3 +82,11 @@ func trackMouse(wiremode:bool = true):
 		#print($MouseIndicator.position)
 func hideTracker():
 	$MouseIndicator.visible = false
+
+func Pan(dir:Vector2):
+	camera_pan_vel = lerp(camera_pan_vel,dir*max_camera_pan_speed,.1)
+	
+	
+
+func Tilt(dir:Vector2):
+	pass

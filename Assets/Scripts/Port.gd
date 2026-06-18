@@ -18,8 +18,11 @@ func isFull()->bool:
 
 func generate(type:Product.Types, input:bool ):
 	self.type = type
+	self.input = input
 	if self.type == Product.Types.Nothing:
 		self.visible = false
+		return
+	#set port visuals
 	if input:	
 		$inarrow.visible =  true 
 		$outarrow.visible = false
@@ -31,7 +34,6 @@ func generate(type:Product.Types, input:bool ):
 	elif self.type == Product.Types.Tungo:
 		$cubeport2.visible = true
 	#TODO repetitive
-	
 func empty():
 	content.queue_free()
 	content = null	

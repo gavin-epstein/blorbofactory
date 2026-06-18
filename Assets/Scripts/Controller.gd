@@ -10,7 +10,7 @@ const productScene = preload("res://Assets/Scenes/Product.tscn")
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	global.controller = self;
-	wiregrid = wireGrid.new()
+	wiregrid = $"../World/Wires/wireGrid"
 	
 	test()
 	
@@ -25,10 +25,38 @@ func test():
 	factory.base_processing_time = 30
 	var factory2 = createFactory(rotateProductList(outputs,3), rotateProductList(inputs,3), Vector2(0,1))
 	
+	#var neighs = wiregrid.getNeighbors(wiregrid.nodeAt(Vector4i(0,1,0,1)))
+	#for neigh in neighs:
+		#print(neigh.gridCoords)
+	#return
+	
 	createProduct(tungo.type,factory2.ports[0])
 	createProduct(bigblop.type,factory.ports[1])
-	addWireStart(wiregrid.nodeAt(wireGrid.fromRealCoords(factory.ports[1].position)))
-	addWireEnd(factory2.ports[3])
+	#for x in range(-2,2):
+		#
+		#for y in range(-2,2):
+			#var type = x+3
+			#var p = productScene.instantiate()
+			#p.generate(type)
+			#global.world.add_child(p)
+			#p.position = World.fromGridCoords(Vector2i(0,x))+Vector3(0,.2,0)
+			#p = productScene.instantiate()
+			#p.generate(type)
+			#global.world.add_child(p)
+			#p.position = wireGrid.toRealCoords(Vector4i(x,y,0,2))
+	#for w in range(6):
+			#var p = productScene.instantiate()
+			#p.generate(w+1)
+			#p.global_position = wireGrid.toRealCoords(wireGrid.crossHexNeighbor( Vector4i(0,0,0,w)))
+			#global.world.add_child(p)
+			#p = productScene.instantiate()
+			#p.generate(w+1)
+			#p.global_position = wireGrid.toRealCoords( Vector4i(0,0,0,w))
+			#global.world.add_child(p)
+	addWireStart(Vector4i(0,0,0,1))
+	addWireEnd(Vector4i(0,1,0,4))
+	addWireStart(Vector4i(0,0,0,4))
+	addWireEnd(Vector4i(0,1,0,2))
 	
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -41,35 +69,45 @@ func _process(delta):
 	#for each ticked object in model, call its frame(sincelasttick)
 	global.world.frame(sincelasttick);
 	#adding wire
-	if _ghostWire!=null:
-		drawGhostWire()
-		pass
+	
 	#adding factory
 func _gametick(delta):
 	global.world.gametick(delta)
 
-func addWireStart(start:Node3D):
-	_ghostWire = Wire.new()
-	var startspace = wireGrid.fromRealCoords(start.position)
+func addWireStart(startspace:Vector4i):
+	_ghostWire = wireScene.instantiate()
+	global.world.get_node("Wires").add_child(_ghostWire)
+	#var startspace = wireGrid.fromRealCoords(start.global_position)
+
 	#actually want to start across from it bc it will be blocked
 	startspace = wireGrid.crossHexNeighbor(startspace)
-	startspace = wiregrid.nodeAt(startspace)
-	_wireStart = start
-	_wireDijkstra = wireGrid.Dijkstra.new(startspace,wiregrid)
+	print("Start:", startspace)
+	var startnode = wiregrid.nodeAt(startspace)
+	_wireStart = startnode
+	_wireDijkstra = wireGrid.Dijkstra.new(startnode,wiregrid)
 func drawGhostWire():
 	
 	#TODO get end based on mouse projection into world space
-	var end;
-	var path:Array = _wireDijkstra.getPath(end)
+	var end = global.world.cast_mouse_to_wire();
+	var path:Array[wireGrid.wireNode] = _wireDijkstra.getPath(wiregrid.nodeAt(end))
+	_ghostWire.setCurve(path)
 	
 	pass
-func addWireEnd(end:Node3D):
-	var path = _wireDijkstra.getPath(end)
-	var wire:Wire = wireScene.instantiate()
-	wire.setCurve(path)
+func addWireEnd(endspace:Vector4i):
+	
+	#var endspace =  wireGrid.fromRealCoords(end.global_position)
+	endspace = wireGrid.crossHexNeighbor(endspace)
+	print("End:", endspace)
+	var path = _wireDijkstra.getPath(wiregrid.nodeAt(endspace))
+	while path.size()==0:
+		await get_tree().create_timer(.1).timeout 
+		path = _wireDijkstra.getPath(wiregrid.nodeAt(endspace))
 	for node in path:
-		node.contents.append(wire)
-	global.world.get_child("Wires").add_child(wire)
+		print(node.gridCoords, " ", node.dist)
+	_ghostWire.setCurve(path)
+	for node in path:
+		node.contents.append(_ghostWire)
+	_ghostWire = null
 	pass
 func cancelGhostWire():
 	_wireDijkstra.clear()
@@ -89,17 +127,19 @@ func createFactory(inputs: Array[Product], outputs: Array[Product], location:Vec
 	var factory = factoryScene.instantiate()
 	factory.generate(inputs, outputs)
 	factory.controller = self
-
-	factory.global_position = global.world.fromGridCoords(location)
 	global.world.find_child("Factories").add_child(factory)
+	factory.global_position = global.world.fromGridCoords(location)
+	
 	
 	#link ports
 	for i in len(global.world.neighborcoords):
 		var d = global.world.neighborcoords[i]
 		var otherfac:Factory = global.world.getFactoryAt(location+d)
 		if otherfac!=null:
-			print("linking "+str((i+5)%6) + " with " + str((i+2)%6))
+			#print("linking "+str((i+5)%6) + " with " + str((i+2)%6))
 			Port.Link(factory.ports[(i+5)%6], otherfac.ports[(i+2)%6])
+		#add ports to wiregrid:
+		wiregrid.nodeAt(Vector4i(location.x,location.y,0,i)).contents.append(factory.ports[i])
 	return factory
 
 static func rotateProductList(list:Array[Product],ind:int)->Array:
