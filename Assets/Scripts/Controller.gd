@@ -4,29 +4,31 @@ var wiregrid:wireGrid
 var _ghostWire:Wire
 var _wireDijkstra:wireGrid.Dijkstra
 var _wireStart
-var World
 const factoryScene = preload("res://Assets/Scenes/Factory.tscn")
 const wireScene = preload("res://Assets/Scenes/Wire.tscn")
 const productScene = preload("res://Assets/Scenes/Product.tscn")
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	global.controller = self;
 	wiregrid = wireGrid.new()
-	World = get_parent().find_child("World")
+	
 	test()
 	
 func test():
 	var blop = createProduct(Product.Types.Blop, null)
 	var bigblop = createProduct(Product.Types.Blop, null, false, true, false)
+	var tungo = createProduct(Product.Types.Tungo, null)
 	var nothing = createProduct(Product.Types.Nothing, null)
 	var inputs: Array[Product] = [blop, blop, nothing, nothing, nothing,nothing]
-	var outputs: Array[Product] =[nothing, nothing, nothing, bigblop, nothing, nothing]
+	var outputs: Array[Product] =[nothing, nothing, nothing, tungo, nothing, nothing]
 	var factory = createFactory( inputs, outputs, Vector2(0,0))
 	factory.base_processing_time = 30
+	var factory2 = createFactory(rotateProductList(outputs,3), rotateProductList(inputs,3), Vector2(0,1))
 	
-	
-	
-	createProduct(blop.type,factory.ports[0])
-	createProduct(blop.type,factory.ports[1])
+	createProduct(tungo.type,factory2.ports[0])
+	createProduct(bigblop.type,factory.ports[1])
+	addWireStart(wiregrid.nodeAt(wireGrid.fromRealCoords(factory.ports[1].position)))
+	addWireEnd(factory2.ports[3])
 	
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -37,14 +39,14 @@ func _process(delta):
 		#print(sincelasttick)
 		sincelasttick-=1.0/tickedVar.TPS
 	#for each ticked object in model, call its frame(sincelasttick)
-	World.frame(sincelasttick);
+	global.world.frame(sincelasttick);
 	#adding wire
 	if _ghostWire!=null:
 		drawGhostWire()
 		pass
 	#adding factory
 func _gametick(delta):
-	World.gametick(delta)
+	global.world.gametick(delta)
 
 func addWireStart(start:Node3D):
 	_ghostWire = Wire.new()
@@ -53,7 +55,7 @@ func addWireStart(start:Node3D):
 	startspace = wireGrid.crossHexNeighbor(startspace)
 	startspace = wiregrid.nodeAt(startspace)
 	_wireStart = start
-	_wireDijkstra = wireGrid.Dijkstra.new(wiregrid.grid, startspace)
+	_wireDijkstra = wireGrid.Dijkstra.new(startspace,wiregrid)
 func drawGhostWire():
 	
 	#TODO get end based on mouse projection into world space
@@ -67,7 +69,7 @@ func addWireEnd(end:Node3D):
 	wire.setCurve(path)
 	for node in path:
 		node.contents.append(wire)
-	World.get_child("Wires").add_child(wire)
+	global.world.get_child("Wires").add_child(wire)
 	pass
 func cancelGhostWire():
 	_wireDijkstra.clear()
@@ -77,17 +79,32 @@ func createProduct(type:Product.Types, container, isZoomy = false, isBiggo= fals
 	var product = productScene.instantiate()
 	product.generate(type, isZoomy, isBiggo, isFleezy)
 	if container != null:
-		World.find_child("Products").add_child(product)
+		global.world.find_child("Products").add_child(product)
 		product.global_position = container.global_position
-		container.content = product
+		container.addContent(product)
 		
 	return product
 	
-func createFactory(inputs: Array[Product], outputs: Array[Product], location:Vector2):
+func createFactory(inputs: Array[Product], outputs: Array[Product], location:Vector2i):
 	var factory = factoryScene.instantiate()
 	factory.generate(inputs, outputs)
 	factory.controller = self
-	factory.global_position = Vector3(location.x, 0, location.y)
-	World.find_child("Factories").add_child(factory)
+
+	factory.global_position = global.world.fromGridCoords(location)
+	global.world.find_child("Factories").add_child(factory)
 	
+	#link ports
+	for i in len(global.world.neighborcoords):
+		var d = global.world.neighborcoords[i]
+		var otherfac:Factory = global.world.getFactoryAt(location+d)
+		if otherfac!=null:
+			print("linking "+str((i+5)%6) + " with " + str((i+2)%6))
+			Port.Link(factory.ports[(i+5)%6], otherfac.ports[(i+2)%6])
 	return factory
+
+static func rotateProductList(list:Array[Product],ind:int)->Array:
+	var newlist:Array[Product] = [] 
+	var l = len(list)
+	for i in range(l):
+		newlist.append(list[(i+ind)%l])
+	return newlist

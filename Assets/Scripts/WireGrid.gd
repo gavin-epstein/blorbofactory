@@ -8,7 +8,7 @@ const sqrt3 = 1.73205080757
 class wireNode:
 	var prev
 	var neighbors
-	var dist
+	var dist=0;
 	var gridCoords:Vector4i #[x->hexgridx, y->hexgridy, z-> height, w->hexgrid->rotation]
 							#[hexgridx -> worldz, hexgridy -> world sqrt3/2 x + .5 z, height -> world y
 	var contents = []
@@ -25,12 +25,14 @@ class wireNode:
 
 
 	#get node if there is one, else make it
-func nodeAt(gridCoords:Vector4i, ):
-	if grid[gridCoords]!=null:
+func nodeAt(gridCoords:Vector4i, ) -> wireNode:
+	if grid.has(gridCoords):
 		return grid[gridCoords]
 	var node =wireNode.new(gridCoords)
 	grid[gridCoords]=node
 	return node
+func hasNode(gridCoords:Vector4i)->bool:
+	return  grid.has(gridCoords);
 class Dijkstra:
 	const MAXSTEPS = 200
 	var _start:wireNode
@@ -66,7 +68,7 @@ class Dijkstra:
 			return
 		for neigh:wireNode in _parent.getNeighbors(next):
 			if neigh.prev ==null:
-				neigh.mark(next, next.dist+wireGrid.distbetween(neigh.gridCoords,next.gridCoord ) )
+				neigh.mark(next, next.dist+wireGrid.distbetween(neigh.gridCoords,next.gridCoords ) )
 				_heap.push(neigh)
 	func getPath(end)->Array[wireNode]:
 		if end not in _ends:

@@ -11,9 +11,12 @@ func push(value):
 	data.append(value)
 	sift_up(data.size()-1)
 func pop():
+	if len(data) == 1:
+		return data.pop_back()
 	var value=data[0]
 	data[0]=data.pop_back()
 	sift_down(0)
+	return value
 	
 func sift_up(i):
 	var current = data[i]

@@ -23,6 +23,7 @@ func getValue(delta):
 		current =  _last +( _target-_last)*delta*TPS
 	elif _type == "Vector":
 		current =  _last.lerp(_target, delta*TPS)
+	_last = current
 	return current
 	
 func add(value):

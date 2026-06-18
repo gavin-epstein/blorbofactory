@@ -8,7 +8,7 @@ void vertex() {
 	vec4 objCenter_os =  vec4(0,0,0,1.0);
 	//vec4 vert_os =  VERTEX;
 	vec4 fromcenter_os =  vec4(0,0,0,1.0) - vec4(VERTEX,1); 
-	angle =  atan(fromcenter_os.x,fromcenter_os.z);
+	angle =  PI - atan(fromcenter_os.x,fromcenter_os.z);
 	
 }
 
@@ -19,7 +19,7 @@ void fragment() {
 	ALBEDO = color;
 	//ALBEDO = vec3(angle/(2.0*PI),0.0,0.0);
 	ALPHA = 1.0;
-    if (angle > (progress-.5) * 2.0*PI){
+    if (angle > (progress) * 2.0*PI){
 		ALPHA = 0.0;
 	}
 	// Called for every pixel the material is visible on.
