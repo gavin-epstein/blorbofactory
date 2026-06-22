@@ -25,25 +25,27 @@ func test():
 	factory.base_processing_time = 30
 	var factory2 = createFactory(rotateProductList(outputs,3), rotateProductList(inputs,3), Vector2(0,1))
 	
-	#var neighs = wiregrid.getNeighbors(wiregrid.nodeAt(Vector4i(0,1,0,1)))
-	#for neigh in neighs:
-		#print(neigh.gridCoords)
-	#return
 	
 	createProduct(tungo.type,factory2.ports[0])
 	createProduct(bigblop.type,factory.ports[1])
-	#for x in range(-2,2):
-		#
-		#for y in range(-2,2):
-			#var type = x+3
-			#var p = productScene.instantiate()
-			#p.generate(type)
-			#global.world.add_child(p)
-			#p.position = World.fromGridCoords(Vector2i(0,x))+Vector3(0,.2,0)
-			#p = productScene.instantiate()
-			#p.generate(type)
-			#global.world.add_child(p)
-			#p.position = wireGrid.toRealCoords(Vector4i(x,y,0,2))
+	
+	
+	#for x in range(3):
+		#for y in range(3):
+			#for w in range(6):
+				#var type = x+1
+				#var p = productScene.instantiate()
+				#p.generate(type)
+				#p.set_scale(Vector3(.2,.2,.2))
+				#global.world.add_child(p)
+				#var  pos = wiregrid.toRealCoords(Vector4i(x,y,0,w))
+				#pos.y =1
+				#p.global_position =pos
+				
+				#p = productScene.instantiate()
+				#p.generate(type)
+				#global.world.add_child(p)
+				#p.position = wireGrid.toRealCoords(Vector4i(x,y,0,2))
 	#for w in range(6):
 			#var p = productScene.instantiate()
 			#p.generate(w+1)
@@ -53,6 +55,26 @@ func test():
 			#p.generate(w+1)
 			#p.global_position = wireGrid.toRealCoords( Vector4i(0,0,0,w))
 			#global.world.add_child(p)
+	#for x in range(24):
+		#for z in range(24):
+			#for y in range(1):
+				##var doubleconv = World.toGridCoords(World.fromGridCoords(Vector2i(x,z)))
+				##if doubleconv != Vector2i(x,z):
+					##print(doubleconv, Vector2i(x,z))
+				#var realpos = Vector3(.1*x,1,.1*z)
+				#var p = productScene.instantiate()
+				#p.generate(1)
+				#var center = World.fromGridCoords(World.toGridCoords(realpos))
+				#center.y = realpos.y
+				#p.global_position = center
+				#global.world.add_child(p)
+				#
+				#var gridpos= wireGrid.toRealCoords(wireGrid.fromRealCoords(realpos))
+				#gridpos.y=realpos.y
+				#drawLineDebug(realpos,gridpos)
+				##drawLineDebug(realpos,center)
+				
+			
 	addWireStart(Vector4i(0,0,0,1))
 	addWireEnd(Vector4i(0,1,0,4))
 	addWireStart(Vector4i(0,0,0,4))
@@ -107,6 +129,7 @@ func addWireEnd(endspace:Vector4i):
 	_ghostWire.setCurve(path)
 	for node in path:
 		node.contents.append(_ghostWire)
+		wiregrid.resetNeighbors(node)
 	_ghostWire = null
 	pass
 func cancelGhostWire():
@@ -148,3 +171,13 @@ static func rotateProductList(list:Array[Product],ind:int)->Array:
 	for i in range(l):
 		newlist.append(list[(i+ind)%l])
 	return newlist
+
+func drawLineDebug(p1:Vector3, p2:Vector3):
+	var meshI:MeshInstance3D = MeshInstance3D.new()
+	var mesh:ImmediateMesh = ImmediateMesh.new()
+	meshI.mesh = mesh
+	mesh.surface_begin(Mesh.PRIMITIVE_LINES)
+	mesh.surface_add_vertex(p1)
+	mesh.surface_add_vertex(p2)
+	mesh.surface_end()
+	global.world.add_child(meshI)

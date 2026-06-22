@@ -19,12 +19,40 @@ func _process(delta):
 
 
 static func toGridCoords(c:Vector3)->Vector2i:
-	var gridy = floor(c.z+.5)
-	var gridx = .5*c.z + sqrt3*c.x/2
-	gridy = floor(gridy+.5)
-	return Vector2i(gridx, gridy)
+	##cube round from https://www.redblobgames.com/grids/hexagons/#rounding
+	#var s = -2.0/sqrt3*(c.x)
+	#var r = c.y-.5*c.x
+	#var q = -s-r
+	##+r = gridy
+	##-s = gridx
+	#var qint = round(q)
+	#var rint = round(r)
+	#var sint = round(s)
+	#var q_diff = abs(q - qint)
+	#var r_diff = abs(r - rint)
+	#var s_diff = abs(s - sint)
+	#if q_diff > r_diff and q_diff > s_diff:
+		#qint = -rint-sint
+	#elif r_diff > s_diff:
+		#rint = -qint-sint
+	#else:
+		#sint = -qint-rint
+#
+	#return Vector2i(-sint,rint)
+	var x = (2.0/sqrt3)*c.x
+	var y = c.z-.5*c.x
+	#https://observablehq.com/@jrus/hexround
+	var xgrid = round(x)
+	var ygrid = round(y)
+	x -= xgrid
+	y -= ygrid # remainder
+	if abs(x) >= abs(y):
+		return  Vector2i( xgrid + round(x + 0.5*y), ygrid)
+	else:
+		return  Vector2i( xgrid, ygrid + round(y + 0.5*x))
+	
 static func fromGridCoords(v:Vector2i)->Vector3:
-		var x = sqrt3*v.x/2
+		var x = sqrt3*v.x/2.0
 		var z = v.y + v.x/2.0
 		return Vector3(x,0.0,z)
 
@@ -35,7 +63,7 @@ func cast_mouse_to_wire()-> Vector4i:
 	var steppos =  origin;
 	while steppos.y>-2:
 		var gridcoords = wireGrid.fromRealCoords(steppos);
-		if gridcoords.z<=0 or gridcoords.z <wireGrid.MAXHEIGHT  and $Wires/wireGrid.hasNode(gridcoords):
+		if gridcoords.z<=0 or (gridcoords.z <wireGrid.MAXHEIGHT  and $Wires/wireGrid.hasNode(gridcoords)):
 			return gridcoords
 		steppos += direction*wireGrid.HEIGHTINTERVAL;
 	return Vector4i(0,0,0,0)
@@ -77,7 +105,7 @@ func trackMouse(wiremode:bool = true):
 	$MouseIndicator.visible = true
 	if wiremode:
 		var gridpos = cast_mouse_to_wire()
-		$MouseIndicator.position = wireGrid.toRealCoords(gridpos+Vector4i(0,0,1,0))-$Wires/wireGrid.position;
+		$MouseIndicator.position = wireGrid.toRealCoords(gridpos+Vector4i(0,0,.1,0))-$Wires/wireGrid.position;
 		$MouseIndicator2.position = cast_mouse_debug()
 		#print($MouseIndicator.position)
 func hideTracker():

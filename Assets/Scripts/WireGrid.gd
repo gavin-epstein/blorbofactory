@@ -1,7 +1,7 @@
 class_name	wireGrid
 extends Node3D
 var grid = {}
-const HEIGHTINTERVAL = .2
+const HEIGHTINTERVAL = .3
 const MAXHEIGHT=7
 const sqrt3 = 1.73205080757 
 
@@ -122,16 +122,20 @@ static func toRealCoords(gridcoords:Vector4i)-> Vector3:
 	return getHandleCoords(gridcoords,0)
 static func fromRealCoords(c:Vector3)->Vector4i:
 	var gridxy = World.toGridCoords(c)
-	var gridx = gridxy.x#floor(c.z+.5)
-	var gridy = gridxy.y #.5*c.z + sqrt3*c.x/2
-	#gridy = floor(gridy+.5)
+	var gridx = gridxy.x
+	var gridy = gridxy.y 
 	var height = (c.y / HEIGHTINTERVAL) -.1
 	height = clampi(height,0,MAXHEIGHT)
-	var hexcenter = getHandleCoords(Vector4i(gridx,gridy,height,0),1)
-	var tozeroangle = getHandleCoords(Vector4i(gridx,gridy,height,0),0)
-	var angle = (tozeroangle-hexcenter).angle_to((c-hexcenter)) #{0, 2*PI}
-	angle= floor(angle*3/PI)
-	return Vector4i(gridx,gridy,height,angle)
+	var hexcenter = World.fromGridCoords(gridxy)
+	#zero angle is -z
+	var angle = -Vector2(0,-1).angle_to(Vector2(c.x,c.z)-Vector2(hexcenter.x, hexcenter.z))
+	
+	#var hexcenter =getHandleCoords(Vector4i(gridx,gridy,height,0),1)
+	#var tozeroangle = getHandleCoords(Vector4i(gridx,gridy,height,0),0)
+	#print(tozeroangle - hexcenter)
+	#var angle = (tozeroangle-hexcenter).angle_to((c-hexcenter)) #{0, 2*PI}
+	var w = (int(round(angle*3/PI))+6)%6
+	return Vector4i(gridx,gridy,height,w)
 static func getHandleCoords(gridcoords:Vector4i, handlelength)-> Vector3: 
 	var xyz = World.fromGridCoords(Vector2i(gridcoords.x,gridcoords.y))
 	var x = xyz.x#gridcoords.x + .5*gridcoords.y;
@@ -183,6 +187,30 @@ func getNeighbors(gridNode):
 		if neigh.impassable():
 			break
 	#TODO
-	for woff in range():
+	var wleftoff = 1
+	while wleftoff < 6:
+		coords = Vector4i(c.x, c.y, c.z, (c.w+wleftoff)%6)
+		var neigh = nodeAt(coords)
+		gridNode.neighbors.append(neigh)
+		if neigh.impassable():
+			break
+		wleftoff+=1
+	var wrightoff = 1
+	while wrightoff < 6-wleftoff:
+		coords = Vector4i(c.x, c.y, c.z, (c.w-wrightoff+6)%6)
+		var neigh = nodeAt(coords)
+		gridNode.neighbors.append(neigh)
+		if neigh.impassable():
+			break
+		wrightoff+=1
+			
 	return gridNode.neighbors
 	
+func resetNeighbors(gridNode:wireNode):
+	var c = gridNode.gridCoords
+	for z in range(MAXHEIGHT):
+		var coords = Vector4i(c.x, c.y, z, c.w)
+		nodeAt(coords).neighbors = null
+	for woff in range(6):
+		var coords = Vector4i(c.x, c.y, c.z, (c.w+woff)%6)
+		nodeAt(coords).neighbors = null

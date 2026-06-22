@@ -8,7 +8,7 @@ func _init():
 	curve = Curve3D.new()
 
 func setCurve(path:Array[wireGrid.wireNode]):
-	const defaulthandle = .2
+	const defaulthandle = .5
 	curve.clear_points()
 	var startpos = wireGrid.toRealCoords(path[0].gridCoords)
 	self.position = startpos
