@@ -106,7 +106,7 @@ func trackMouse(wiremode:bool = true):
 	if wiremode:
 		var gridpos = cast_mouse_to_wire()
 		$MouseIndicator.position = wireGrid.toRealCoords(gridpos+Vector4i(0,0,.1,0))-$Wires/wireGrid.position;
-		$MouseIndicator2.position = cast_mouse_debug()
+#		$MouseIndicator2_DEBUG.position = cast_mouse_debug()
 		#print($MouseIndicator.position)
 func hideTracker():
 	$MouseIndicator.visible = false

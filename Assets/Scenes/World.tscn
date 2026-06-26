@@ -73,11 +73,12 @@ mesh = SubResource("ArrayMesh_8vvrr")
 skeleton = NodePath("")
 surface_material_override/0 = SubResource("StandardMaterial3D_15aau")
 
-[node name="MouseIndicator2" type="Node3D" parent="."]
+[node name="MouseIndicator2_DEBUG" type="Node3D" parent="."]
+visible = false
 
-[node name="sphere" type="Node3D" parent="MouseIndicator2"]
+[node name="sphere" type="Node3D" parent="MouseIndicator2_DEBUG"]
 
-[node name="Sphere" type="MeshInstance3D" parent="MouseIndicator2/sphere"]
+[node name="Sphere" type="MeshInstance3D" parent="MouseIndicator2_DEBUG/sphere"]
 mesh = SubResource("ArrayMesh_8vvrr")
 skeleton = NodePath("")
 surface_material_override/0 = SubResource("StandardMaterial3D_q4606")

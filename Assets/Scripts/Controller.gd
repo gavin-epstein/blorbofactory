@@ -3,7 +3,6 @@ var sincelasttick=0;
 var wiregrid:wireGrid
 var _ghostWire:Wire
 var _wireDijkstra:wireGrid.Dijkstra
-var _wireStart
 const factoryScene = preload("res://Assets/Scenes/Factory.tscn")
 const wireScene = preload("res://Assets/Scenes/Wire.tscn")
 const productScene = preload("res://Assets/Scenes/Product.tscn")
@@ -103,24 +102,26 @@ func addWireStart(startspace:Vector4i):
 
 	#actually want to start across from it bc it will be blocked
 	startspace = wireGrid.crossHexNeighbor(startspace)
-	print("Start:", startspace)
 	var startnode = wiregrid.nodeAt(startspace)
-	_wireStart = startnode
+	_ghostWire.start = startnode
 	_wireDijkstra = wireGrid.Dijkstra.new(startnode,wiregrid)
 func drawGhostWire():
 	
 	#TODO get end based on mouse projection into world space
 	var end = global.world.cast_mouse_to_wire();
 	var path:Array[wireGrid.wireNode] = _wireDijkstra.getPath(wiregrid.nodeAt(end))
-	_ghostWire.setCurve(path)
+	if len(path) >0:
+		_ghostWire.setCurve(path)
 	
 	pass
-func addWireEnd(endspace:Vector4i):
-	
+func addWireEnd(endspace:Vector4i)->bool:
 	#var endspace =  wireGrid.fromRealCoords(end.global_position)
 	endspace = wireGrid.crossHexNeighbor(endspace)
-	print("End:", endspace)
-	var path = _wireDijkstra.getPath(wiregrid.nodeAt(endspace))
+	var endnode = wiregrid.nodeAt(endspace)
+	if endnode==_ghostWire.start:
+		return false #fail to make wire
+	_ghostWire.end = endnode
+	var path = _wireDijkstra.getPath(endnode)
 	while path.size()==0:
 		await get_tree().create_timer(.1).timeout 
 		path = _wireDijkstra.getPath(wiregrid.nodeAt(endspace))
@@ -131,7 +132,7 @@ func addWireEnd(endspace:Vector4i):
 		node.contents.append(_ghostWire)
 		wiregrid.resetNeighbors(node)
 	_ghostWire = null
-	pass
+	return true
 func cancelGhostWire():
 	_wireDijkstra.clear()
 	_wireDijkstra = null

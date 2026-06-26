@@ -13,8 +13,12 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.pressed:
 			if tracking == trackingstates.WIRESTART:
-				stoptracking()
-				#global.controller.addWireStart(;
+				#stoptracking()
+				global.controller.addWireStart(global.world.cast_mouse_to_wire());
+				tracking = trackingstates.WIREEND
+			elif tracking == trackingstates.WIREEND:
+				if global.controller.addWireEnd(global.world.cast_mouse_to_wire()):
+					stoptracking()
 	elif event is InputEventMouseMotion:
 		if tracking == trackingstates.WIRESTART:
 			global.world.trackMouse()

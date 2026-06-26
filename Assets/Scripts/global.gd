@@ -1,5 +1,6 @@
 extends Node
 
-var world;
+
+var world: World;
 var controller;
 var ui;
